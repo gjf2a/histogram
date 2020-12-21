@@ -2,7 +2,8 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::collections::hash_map::Iter;
 
-pub struct Histogram<T> {
+#[derive(Debug,Clone,Eq,PartialEq)]
+pub struct Histogram<T:Hash+Clone+Eq> {
     histogram: HashMap<T,usize>
 }
 
@@ -48,7 +49,8 @@ mod tests {
     #[test]
     fn iterator() {
         let h = make_simple();
-        let itered: Vec<_> = h.iter().map(|(s,c)| (*s, *c)).collect();
+        let mut itered: Vec<_> = h.iter().map(|(s,c)| (*s, *c)).collect();
+        itered.sort();
         assert_eq!(itered, vec![("a", 3), ("b", 2), ("c", 1)]);
     }
 }
