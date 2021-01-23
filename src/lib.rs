@@ -25,10 +25,10 @@ impl <T:Hash+Clone+Eq> Histogram<T> {
         self.histogram.iter()
     }
 
-    pub fn ranking(&self) -> Vec<(usize,T)> {
-        let mut ranking: Vec<(usize,T)> = self.iter().map(|(n,t)| (*t, n.clone())).collect();
+    pub fn ranking(&self) -> Vec<T> {
+        let mut ranking: Vec<(usize,T)> = self.iter().map(|(t, n)| (*n, t.clone())).collect();
         ranking.sort_by_key(|(n,_)| -(*n as isize));
-        ranking
+        ranking.iter().map(|(_,t)| t.clone()).collect()
     }
 }
 
@@ -64,6 +64,6 @@ mod tests {
     fn sorting() {
         let h = make_simple();
         let ranking = h.ranking();
-        assert_eq!(ranking, vec![(3, "a"), (2, "b"), (1, "c")]);
+        assert_eq!(ranking, vec!["a", "b", "c"]);
     }
 }
