@@ -18,6 +18,10 @@ impl <T:Hash+Clone+Eq> Histogram<T> {
         };
     }
 
+    pub fn len(&self) -> usize {
+        self.histogram.len()
+    }
+
     pub fn count(&self, item: &T) -> usize {
         *self.histogram.get(item).unwrap_or(&0)
     }
