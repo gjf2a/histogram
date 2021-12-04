@@ -1,3 +1,4 @@
+use core::fmt;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::collections::hash_map::Iter;
@@ -30,6 +31,33 @@ impl <T:Hash+Clone+Eq> Histogram<T> {
         ranking.sort_by_key(|(n,_)| -(*n as isize));
         ranking.iter().map(|(_,t)| t.clone()).collect()
     }
+
+    pub fn mode(&self) -> Option<T> {
+        self.iter().max_by_key(|(_,count)| **count).map(|(key, _)| key.clone())
+    }
+
+    pub fn total_count(&self) -> usize {
+        self.iter().map(|(_,value)| value).sum()
+    }
+}
+
+impl<K: Hash + Eq + Copy + std::cmp::Ord + fmt::Display> fmt::Display for Histogram<K> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut in_order: Vec<K> = self.iter().map(|(k,_)| k).copied().collect();
+        in_order.sort();
+        for label in in_order {
+            write!(f, "{}:{}; ", label, self.count(&label))?;
+        }
+        Ok(())
+    }
+}
+
+pub fn mode<K: Eq + Copy + Hash, I: Iterator<Item=K>>(items: &mut I) -> K {
+    let mut counts = Histogram::new();
+    for k in items {
+        counts.bump(&k);
+    }
+    counts.mode().unwrap()
 }
 
 #[cfg(test)]
@@ -65,5 +93,11 @@ mod tests {
         let h = make_simple();
         let ranking = h.ranking();
         assert_eq!(ranking, vec!["a", "b", "c"]);
+    }
+
+    #[test]
+    fn test_mode() {
+        let nums = vec![5, 4, 3, 4, 5, 6, 5];
+        assert_eq!(5, *mode(&mut nums.iter()));
     }
 }
