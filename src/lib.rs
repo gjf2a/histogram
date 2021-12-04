@@ -105,5 +105,11 @@ mod tests {
     fn test_mode() {
         let nums = vec![5, 4, 3, 4, 5, 6, 5];
         assert_eq!(5, *mode(&mut nums.iter()));
+
+        let mut hist = Histogram::new();
+        for num in nums.iter() {
+            hist.bump(num);
+        }
+        assert_eq!((5, 3), hist.mode().unwrap())
     }
 }
