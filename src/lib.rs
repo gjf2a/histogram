@@ -36,8 +36,10 @@ impl <T:Hash+Clone+Eq> Histogram<T> {
         ranking.iter().map(|(_,t)| t.clone()).collect()
     }
 
-    pub fn mode(&self) -> Option<T> {
-        self.iter().max_by_key(|(_,count)| **count).map(|(key, _)| key.clone())
+    pub fn mode(&self) -> Option<(T,usize)> {
+        self.iter()
+            .max_by_key(|(_,count)| **count)
+            .map(|(key, count)| (key.clone(), *count))
     }
 
     pub fn total_count(&self) -> usize {
@@ -61,7 +63,7 @@ pub fn mode<K: Eq + Copy + Hash, I: Iterator<Item=K>>(items: &mut I) -> K {
     for k in items {
         counts.bump(&k);
     }
-    counts.mode().unwrap()
+    counts.mode().unwrap().0
 }
 
 #[cfg(test)]
